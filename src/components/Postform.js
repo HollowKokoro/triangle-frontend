@@ -1,10 +1,11 @@
 import React from "react";
 import { useState } from "react";
-import Axios from "axios";
 
 function PostForm(params) {
-    const url = 'http://localhost:8080/input'
-    const [data, setData] = useState({
+    const inputUrl = 'http://localhost:8080/input'
+    const outputUrl = 'http://localhost:8080/output'
+
+    const [inputData, setInputData] = useState({
         aSide: '',
         bSide: '',
         cSide: '',
@@ -13,37 +14,63 @@ function PostForm(params) {
         bcAngle: ''
     })
 
+    const [outputData, setOutputData] = useState({
+        area: '',
+        perimeter: '',
+        type: '',
+        bisector: '',
+        heights: '',
+        areaOfInscribedCircle: '',
+        areaOfCircumscribedCircle: '',
+        sine: '',
+        cosine: '',
+        tangent: '',
+        leg: '',
+        hypotenuse: '',
+        medians: ''
+    })
+
     function submit(e) {
         e.preventDefault()
-        Axios.post(url, {
-            aSide: data.aSide,
-            bSide: data.bSide,
-            cSide: data.cSide,
-            abAngle: data.abAngle,
-            acAngle: data.acAngle,
-            bcAngle: data.bcAngle
-        }).then(res => {
-            console.log(res.data);
+        fetch(inputUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(
+                {
+                    aSide: inputData.aSide,
+                    bSide: inputData.bSide,
+                    cSide: inputData.cSide,
+                    abAngle: inputData.abAngle,
+                    acAngle: inputData.acAngle,
+                    bcAngle: inputData.bcAngle
+                }
+            )
+        })
+        fetch(outputUrl).then(res => {
+            console.log(res);
+        }).then(data => {
+            setOutputData(data);
         })
     }
 
     function handleInput(e) {
-        const newData = { ...data }
+        const newData = { ...inputData }
         newData[e.target.id] = e.target.value
-        setData(newData)
-        console.log(newData)
+        setInputData(newData)
     }
+
     return (
         <div>
             <form onSubmit={(e) => submit(e)}>
-                <input onChange={(e) => handleInput(e)} id="aSide" value={data.aSide} placeholder="Сторона A" type="number"></input>
-                <input onChange={(e) => handleInput(e)} id="bSide" value={data.bSide} placeholder="Сторона B" type="number"></input>
-                <input onChange={(e) => handleInput(e)} id="cSide" value={data.cSide} placeholder="Сторона C" type="number"></input>
-                <input onChange={(e) => handleInput(e)} id="abAngle" value={data.abAngle} placeholder="Угол AB" type="number"></input>
-                <input onChange={(e) => handleInput(e)} id="acAngle" value={data.acAngle} placeholder="Угол BC" type="number"></input>
-                <input onChange={(e) => handleInput(e)} id="bcAngle" value={data.bcAngle} placeholder="Угол AC" type="number"></input>
+                <input onChange={(e) => handleInput(e)} id="aSide" value={inputData.aSide} placeholder="Сторона A" type="number"></input>
+                <input onChange={(e) => handleInput(e)} id="bSide" value={inputData.bSide} placeholder="Сторона B" type="number"></input>
+                <input onChange={(e) => handleInput(e)} id="cSide" value={inputData.cSide} placeholder="Сторона C" type="number"></input>
+                <input onChange={(e) => handleInput(e)} id="abAngle" value={inputData.abAngle} placeholder="Угол AB" type="number"></input>
+                <input onChange={(e) => handleInput(e)} id="acAngle" value={inputData.acAngle} placeholder="Угол BC" type="number"></input>
+                <input onChange={(e) => handleInput(e)} id="bcAngle" value={inputData.bcAngle} placeholder="Угол AC" type="number"></input>
                 <button>Расчитать</button>
             </form>
+
         </div>
     )
 }
